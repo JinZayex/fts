@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="it" dir="ltr" data-theme="yellow">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FREE THE SOUND</title>
+
+  <!-- Font (Google Fonts)
+       Anton            → titoli: grotesk condensato e pesantissimo, stile copertina hardcore
+       Archivo Narrow   → testo
+       Space Mono       → etichette, date, ID
+       Lalezar          → titoli in arabo (Anton non ha caratteri arabi)
+       Cairo            → testo ed etichette in arabo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Narrow:wght@400;700&family=Space+Mono:wght@400;700&family=Lalezar&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================
+       COLORI E BASE
+       --main è il colore di fondo della palette scelta.
+       Le palette si cambiano con data-theme su <html>.
+       ========================================================= */
+    :root {
+      --main:   #ffe100;   /* giallo (default) */
+      --black:  #0b0b0b;
+      --white:  #f7f5ee;
+      --grey:   #9a9a94;
+
+      --border: 6px solid var(--black);
+
+      /* I font arabi sono in seconda posizione: il browser li usa
+         automaticamente solo per i caratteri arabi */
+      --font-title: 'Anton', 'Lalezar', Impact, 'Arial Narrow', sans-serif;
+      --font-body:  'Archivo Narrow', 'Cairo', 'Arial Narrow', sans-serif;
+      --font-mono:  'Space Mono', 'Cairo', ui-monospace, monospace;
+
+      --pad: clamp(16px, 4vw, 48px);
+      --topbar: 52px;
+    }
+
+    /* Palette — per aggiungerne una: nuova regola qui + un bottone nella topbar */
+    [data-theme="yellow"] { --main: #ffe100; }
+    [data-theme="blue"]   { --main: #3d7bff; }
+    [data-theme="red"]    { --main: #ff2a1f; }
+    [data-theme="green"]  { --main: #39ff14; }
+    [data-theme="violet"] { --main: #b15cff; }
+    [data-theme="orange"] { --main: #ff7a00; }
+    [data-theme="white"]  { --main: #f0eeee; }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      background: var(--main);
+      color: var(--black);
+      font-family: var(--font-body);
+      font-size: 17px;
+      transition: background 0.25s;
+
+      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><circle cx='16' cy='16' r='14' fill='white' fill-opacity='0.3' stroke='white' stroke-width='2'/></svg>") 16 16, auto;
+
+    }
+
+    a, button, .poster, .door, .swatch {
+      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><circle cx='16' cy='16' r='14' fill='white' fill-opacity='0.65' stroke='white' stroke-width='2'/></svg>") 16 16, pointer;
+    }
+
+
+    a { color: inherit; }
+    button { font-family: inherit; cursor: pointer; color: inherit; }
+
+    
+    
+    /* Grana da stampa leggera sopra tutto */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.12;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    .page {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: var(--pad);
+      padding-top: var(--pad);   /* spazio per la barra fissa */
+    }
+
+    /* =========================================================
+       BARRA FISSA IN ALTO: lingua + palette
+       ========================================================= */
+    .topbar {
+        position: sticky;          /* era fixed: ora occupa il suo spazio, niente contenuto coperto */
+        top: 0;
+        z-index: 40;
+        min-height: var(--topbar); /* era height: si allunga se va a capo */
+        background: var(--black);
+        color: var(--main);
+        display: flex;
+        flex-wrap: wrap;           /* nuovo */
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px 16px;
+        padding: 8px var(--pad);
+        border-bottom: 3px solid var(--black);
+      }
+
+      .topbar .brand {
+        font-family: var(--font-title);
+        font-size: 24px;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+
+      .topbar .controls {
+        display: flex;
+        flex-wrap: wrap;           /* nuovo */
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px clamp(12px, 3vw, 28px);
+      }
+
+      .topbar .group {
+        display: flex;
+        flex-wrap: wrap;           /* nuovo */
+        align-items: center;
+        gap: 6px;
+      }
+
+    /* Selettore lingua */
+    .lang-btn {
+      background: transparent;
+      border: 2px solid var(--main);
+      color: var(--main);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 13px;
+      padding: 4px 8px;
+      line-height: 1;
+    }
+    .lang-btn.active { background: var(--main); color: var(--black); }
+
+    /* Selettore palette: quadratini colorati */
+    .swatch {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--white);
+      padding: 0;
+      background: var(--swatch);
+      transition: transform 0.1s;
+    }
+    .swatch:hover { transform: scale(1.15); }
+    .swatch.active { outline: 3px solid var(--white); outline-offset: 2px; }
+
+    .menu-btn {
+    display: none;                 /* nascosto su desktop */
+    width: 36px;
+    height: 36px;
+    background: var(--main);
+    color: var(--black);
+    border: none;
+    font-family: var(--font-title);
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  @media (max-width: 600px) {
+      .menu-btn { display: block; }
+
+      .topbar .controls {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: flex-start;       /* tutto a sinistra; flex-end = tutto a destra */
+        gap: 14px;
+        padding: 14px var(--pad);
+        background: var(--black);
+        border-bottom: 3px solid var(--main);
+      }
+      .topbar.open .controls { display: flex; }
+
+      .topbar .group {
+        justify-content: flex-start;   /* stesso valore di sopra: flex-start o flex-end */
+      }
+      .topbar .group .label { display: none; }
+    }
+
+    /* =========================================================
+       ELEMENTI COMUNI
+       ========================================================= */
+    /* Titolo enorme, condensato, tutto attaccato */
+    .mega {
+      font-family: var(--font-title);
+      text-transform: uppercase;
+      line-height: 0.86;
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+
+
+
+    /* Striscia di lettere spaziate */
+    .spaced {
+      display: flex;
+      justify-content: space-between;
+      border: 3px solid var(--black);
+      background: var(--main);
+      padding: 4px 12px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: clamp(11px, 1.6vw, 18px);
+      text-transform: uppercase;
+    }
+
+    .label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Bottone nero pieno */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--black);
+      color: var(--main);
+      border: none;
+      padding: 10px 18px;
+      font-family: var(--font-title);
+      font-size: 20px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: transform 0.1s;
+    }
+    .btn:hover { transform: translate(-3px, -3px); box-shadow: 3px 3px 0 var(--white); }
+
+    /* =========================================================
+       SCHERMATE
+       ========================================================= */
+    .screen { display: none; }
+    .screen.active { display: block; animation: slam 0.25s ease-out; }
+    @keyframes slam {
+      from { opacity: 0; transform: scale(1.03); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .section-head {
+      border-bottom: var(--border);
+      padding-bottom: 12px;
+      margin: 24px 0 32px;
+    }
+    .section-head .mega { font-size: clamp(64px, 14vw, 200px); }
+    .section-head .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    /* =========================================================
+       HOME
+       ========================================================= */
+    .hero .mega {
+      font-size: clamp(80px, 20vw, 290px);
+      text-align: center;
+    }
+    .hero .spaced { margin: 10px 0 14px; }
+
+    /* Riquadro nero centrale con foto in bianco e nero */
+    .hero-photo {
+      position: relative;
+      border: var(--border);
+      background: var(--black);
+      aspect-ratio: 16 / 7;
+      overflow: hidden;
+    }
+    .hero-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(1) contrast(1.9) brightness(0.95);
+      mix-blend-mode: screen;
+      opacity: 0.85;
+    }
+    .hero-photo .tag {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      background: var(--main);
+      border: 3px solid var(--black);
+      padding: 4px 10px;
+    }
+
+    .hero .bottom {
+      font-size: clamp(48px, 10.5vw, 150px);
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .index {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: var(--border);
+      margin-top: 32px;
+      background: var(--black);
+      gap: 6px;              /* il "gap" nero fa da bordo interno */
+    }
+    @media (max-width: 800px) { .index { grid-template-columns: 1fr; } }
+
+    .door {
+      background: var(--main);
+      border: none;
+      text-align: start;     /* "start" = sinistra in IT/EN, destra in arabo */
+      padding: 20px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: background 0.1s, color 0.1s;
+    }
+    .door:hover { background: var(--black); color: var(--main); }
+    .door .mega { font-size: clamp(48px, 5.5vw, 84px); }
+    .door .top { display: flex; justify-content: space-between; }
+    .door .arrow { font-family: var(--font-title); font-size: 36px; line-height: 1; }
+
+    footer {
+      margin-top: 40px;
+      padding-top: 12px;
+      border-top: var(--border);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* =========================================================
+       1. PAST EVENTS
+       ========================================================= */
+    .seg { display: inline-flex; border: 3px solid var(--black); }
+    .seg button {
+      width: 44px;
+      height: 40px;
+      border: none;
+      background: var(--main);
+      font-family: var(--font-title);
+      font-size: 20px;
+    }
+    .seg button + button { border-inline-start: 3px solid var(--black); }
+    .seg button.active { background: var(--black); color: var(--main); }
+
+    .posters {
+      --cols: 3;
+      display: grid;
+      grid-template-columns: repeat(var(--cols), 1fr);
+      gap: clamp(16px, 2.5vw, 32px);
+    }
+    @media (max-width: 900px) { .posters { --cols: 2 !important; } }
+    @media (max-width: 540px) { .posters { --cols: 1 !important; } }
+
+    /* Locandina: colore + nero, foto al centro, titolo sopra e sotto */
+    .poster {
+      display: flex;
+      flex-direction: column;
+      aspect-ratio: 210 / 297;      /* proporzione A4 */
+      background: var(--main);
+      border: var(--border);
+      padding: 6% 6% 5%;
+      text-align: start;
+      transition: transform 0.12s;
+    }
+    .poster:hover { transform: translate(-5px, -5px); box-shadow: 10px 10px 0 var(--black); }
+
+    .poster .p-num {
+      font-family: var(--font-title);
+      font-size: clamp(56px, 7.5vw, 120px);
+      line-height: 0.8;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .poster .spaced { margin: 6px 0; font-size: clamp(9px, 1vw, 13px); padding: 2px 8px; }
+
+    .poster .p-photo {
+      flex: 1;
+      background: var(--black);
+      border: 4px solid var(--black);
+      overflow: hidden;
+      min-height: 0;
+    }
+    .poster .p-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(1) contrast(2) brightness(1.05);
+    }
+
+    .poster:hover .p-photo:hover img:hover {
+      background: var(--black);
+      object-fit: contain;
+      filter: none;
+    }
+
+    .poster .p-title {
+      font-family: var(--font-title);
+      font-size: clamp(20px, 2.4vw, 36px);
+      line-height: 0.9;
+      text-transform: uppercase;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* Lightbox */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(11, 11, 11, 0.94);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox .poster { width: min(520px, 90vw, 66vh); cursor: default; }
+    #lightbox .poster:hover { transform: none; box-shadow: none; }
+    #lightbox .close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 48px;
+      height: 48px;
+      background: var(--main);
+      border: 3px solid var(--black);
+      font-family: var(--font-title);
+      font-size: 22px;
+    }
+
+    /* Immagine intera, proporzioni originali, colori originali */
+    #lightbox-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lightbox-img {
+      display: block;
+      max-width: 92vw;
+      max-height: 85vh;        /* entra sempre nello schermo, senza ritagli */
+      width: auto;
+      height: auto;
+      border: 6px solid var(--main);
+      cursor: zoom-in;
+    }
+
+.lightbox-caption { color: var(--main); }
+
+      /* Modalità "dimensione reale": pixel originali, si scorre se è più grande dello schermo */
+      #lightbox.actual-size {
+        overflow: auto;
+        align-items: flex-start;
+        justify-content: flex-start;
+      }
+      #lightbox.actual-size .lightbox-img {
+        max-width: none;
+        max-height: none;
+        cursor: zoom-out;
+      }
+    /* =========================================================
+       2. FTS10 IS NOW
+       ========================================================= */
+    .search {
+      width: min(340px, 100%);
+      padding: 10px 14px;
+      background: var(--white);
+      border: 3px solid var(--black);
+      font-family: var(--font-mono);
+      font-size: 15px;
+      color: var(--black);
+    }
+    .search:focus { outline: none; background: var(--black); color: var(--main); }
+    .search::placeholder { color: var(--grey); }
+
+    .table-wrap { overflow-x: auto; border: var(--border); }
+
+    table { width: 100%; border-collapse: collapse; background: var(--main); }
+
+    thead th {
+      background: var(--black);
+      color: var(--main);
+      font-family: var(--font-title);
+      font-weight: 400;
+      font-size: 22px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      text-align: start;
+      padding: 10px 16px;
+    }
+    thead th:last-child { text-align: end; }
+
+    tbody td {
+      padding: 10px 16px;
+      border-top: 3px solid var(--black);
+      vertical-align: middle;
+    }
+    tbody tr:hover { background: var(--black); color: var(--main); }
+
+    td.icon { width: 84px; }
+    td.icon img {
+      width: 52px;
+      height: 52px;
+      display: block;
+      background: var(--white);
+      border: 6px solid var(--black);
+      filter: drop-shadow(6px 6px 2px black) hue-rotate(90deg);
+    }
+    tbody tr:hover td.icon img { border-color: var(--main); }
+
+    td.name {
+      font-family: var(--font-title);
+      font-size: clamp(24px, 3.4vw, 44px);
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    td.role {
+      font-family: var(--font-title);
+      font-size: clamp(16px, 2vw, 24px);
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    td.code {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 15px;
+      text-align: end;
+      white-space: nowrap;
+    }
+    .empty-row td { text-align: center; padding: 32px; font-family: var(--font-mono); }
+
+    /* =========================================================
+       3. CONTATTI
+       ========================================================= */
+    .links {
+      display: grid;
+      gap: 6px;
+      background: var(--black);
+      border: var(--border);
+    }
+
+    .link {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: clamp(16px, 2.5vw, 28px);
+      background: var(--main);
+      text-decoration: none;
+      transition: background 0.1s, color 0.1s;
+    }
+    .link:hover { background: var(--black); color: var(--main); }
+    .link .mega { font-size: clamp(48px, 9vw, 130px); }
+    .link .desc { display: block; margin-top: 6px; }
+    .link .arrow { font-family: var(--font-title); font-size: clamp(40px, 6vw, 90px); line-height: 1; }
+
+    /* =========================================================
+       ARABO (lingua "ar", scrittura da destra a sinistra)
+       Con dir="rtl" su <html> flex e griglie si ribaltano da sole.
+       Qui sistemiamo solo quello che l'arabo non sopporta.
+       ========================================================= */
+    /* Le lettere arabe sono legate tra loro: niente spaziatura tra lettere */
+    html[lang="ar"] .mega,
+    html[lang="ar"] .label,
+    html[lang="ar"] .spaced,
+    html[lang="ar"] .btn,
+    html[lang="ar"] thead th { letter-spacing: 0; }
+
+    /* L'arabo ha segni sopra e sotto le lettere: serve più interlinea */
+    html[lang="ar"] .door .mega,
+    html[lang="ar"] .section-head .mega,
+    html[lang="ar"] .link .mega { line-height: 1.15; }
+
+    /* Le frecce puntano nel verso di lettura */
+    html[dir="rtl"] .door .arrow,
+    html[dir="rtl"] .link .arrow { display: inline-block; transform: scaleX(-1); }
+
+    /* Didascalia sulla foto: va a destra */
+    html[dir="rtl"] .hero-photo .tag { left: auto; right: 16px; }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===================== BARRA FISSA ===================== -->
+  <header class="topbar">
+    <a class="brand" href="#">FTS</a>
+
+    <button class="menu-btn" aria-expanded="false" aria-controls="controls" aria-label="Menu">☰</button>
+
+    <div class="controls">
+      <div class="group">
+        <span class="label" data-i18n="ui.language">Lingua</span>
+        <button class="lang-btn" data-lang="alt">ALT</button>
+        <button class="lang-btn" data-lang="it">IT</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="tr">TR</button>
+        <button class="lang-btn" data-lang="ar">AR</button>
+      </div>
+
+      <div class="group">
+        <span class="label" data-i18n="ui.color">Colore</span>
+        <button class="swatch" data-theme-btn="yellow" style="--swatch:#ffe100" aria-label="Yellow"></button>
+        <button class="swatch" data-theme-btn="orange" style="--swatch:#ff7a00" aria-label="Orange"></button>
+        <button class="swatch" data-theme-btn="red"    style="--swatch:#ff2a1f" aria-label="Red"></button>
+        <button class="swatch" data-theme-btn="blue"   style="--swatch:#3d7bff" aria-label="Blue"></button>
+        <button class="swatch" data-theme-btn="violet" style="--swatch:#b15cff" aria-label="Violet"></button>
+        <button class="swatch" data-theme-btn="green"  style="--swatch:#39ff14" aria-label="Green"></button>
+        <button class="swatch" data-theme-btn="white"  style="--swatch:#f0eeee" aria-label="White"></button>
+
+      </div>
+    </div>
+  </header>
+
+  <div class="page">
+
+    <!-- ===================== HOME ===================== -->
+    <section id="home" class="screen">
+      <div class="hero">
+        <h1 class="mega">Free the sound</h1>
+        <div class="spaced" aria-hidden="true">
+          <span></span>
+          <span>·</span>
+          <span data-i18n="home.motto1">DO IT YOURSELF</span>
+          <span>.</span>
+          <span data-i18n="home.motto2">DO IT UGLY</span>
+          <span>.</span>
+          <span data-i18n="home.motto3">DO IT NOW</span>
+          <span>·</span>
+          <span></span>
+        </div>
+
+        <div class="hero-photo">
+          <img src="imgs/images.jpg" alt="">
+          <span class="tag label">il numero dei cani sciolti sta salendo</span>
+          <!--
+          <img src="/Users/antonio/Desktop/FTS_SITO/flower.jpg" alt="">
+          <span class="tag label">Enjoy low resolution</span>
+          -->
+        </div>
+
+        <!--
+        <div class="mega bottom">For the children</div>
+         -->
+      </div>
+
+      <div class="index">
+        <button class="door" onclick="goTo('past')">
+          <div class="top"><span class="label">Side A / 01</span><span class="arrow">→</span></div>
+          <span class="mega" data-i18n-html="door.past">Past<br>events</span>
+        </button>
+        <button class="door" onclick="goTo('now')">
+          <div class="top"><span class="label">Side A / 02</span><span class="arrow">→</span></div>
+          <span class="mega" data-i18n-html="door.now">FTS10<br>is now</span>
+        </button>
+        <button class="door" onclick="goTo('contatti')">
+          <div class="top"><span class="label">Side B / 03</span><span class="arrow">→</span></div>
+          <span class="mega" data-i18n-html="door.contacts">Con<br>tatti</span>
+        </button>
+      </div>
+
+      <footer>
+        <span class="label">© Free The Sound</span>
+        <span class="label" data-i18n="footer.motto">No stage · No barrier · No rules</span>
+      </footer>
+    </section>
+
+    <!-- ===================== 1. PAST EVENTS ===================== -->
+    <section id="past" class="screen">
+      <div class="section-head">
+        <div class="row">
+          <a class="btn" href="#" data-i18n="ui.home">← Home</a>
+          <div class="seg" id="cols-control" aria-label="Colonne">
+            <button data-cols="2">2</button>
+            <button data-cols="3" class="active">3</button>
+            <button data-cols="4">4</button>
+          </div>
+        </div>
+        <h1 class="mega" data-i18n="past.title">Past events</h1>
+      </div>
+
+      <div class="posters" id="posters"></div>
+    </section>
+
+    <!-- ===================== 2. FTS10 IS NOW ===================== -->
+    <section id="now" class="screen">
+      <div class="section-head">
+        <div class="row">
+          <a class="btn" href="#" data-i18n="ui.home">← Home</a>
+          <input class="search" id="search" type="search" data-i18n-placeholder="now.search" placeholder="CERCA NOME O ID" autocomplete="off">
+        </div>
+        <h1 class="mega" data-i18n="now.title">FTS10 is now</h1>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-i18n="now.icon">Icona</th>
+              <th data-i18n="now.participant">Partecipante</th>
+              <th data-i18n="now.role">Role</th>
+              <th data-i18n="now.code">ID Code</th>
+            </tr>
+          </thead>
+          <tbody id="participants"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== 3. CONTATTI ===================== -->
+    <section id="contatti" class="screen">
+      <div class="section-head">
+        <div class="row">
+          <a class="btn" href="#" data-i18n="ui.home">← Home</a>
+        </div>
+        <h1 class="mega" data-i18n="contacts.title">Contatti</h1>
+      </div>
+
+      <!-- Modifica qui gli href con i link veri -->
+      <div class="links">
+        <a class="link" href="https://www.instagram.com/" target="_blank" rel="noopener">
+          <span><span class="mega">Instagram</span><span class="label desc" data-i18n="contacts.instagram">Foto · video · annunci</span></span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="link" href="https://bandcamp.com/" target="_blank" rel="noopener">
+          <span><span class="mega">Bandcamp</span><span class="label desc" data-i18n="contacts.bandcamp">Registrazioni live</span></span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="link" href="mailto:info@example.com">
+          <span><span class="mega">Email</span><span class="label desc" data-i18n="contacts.email">Booking · info</span></span>
+          <span class="arrow">↗</span>
+        </a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ===================== LIGHTBOX ===================== -->
+  <div id="lightbox" onclick="if (event.target === this) closeLightbox()">
+    <button class="close" onclick="closeLightbox()" aria-label="Chiudi">✕</button>
+    <div id="lightbox-content"></div>
+  </div>
+
+
+  <script>
+    /* =========================================================
+       TESTI IN QUATTRO LINGUE — modifica qui
+       Ogni elemento con data-i18n="chiave" prende il testo da qui.
+       data-i18n-html → permette <br>; data-i18n-placeholder → placeholder degli input.
+       Per aggiungere una lingua: un blocco qui + un bottone .lang-btn nella topbar
+       (+ la lingua in RTL_LANGS se si scrive da destra a sinistra).
+       ========================================================= */
+    const TEXTS = {
+      alt: {
+        'ui.language':      'Legnə',
+        'ui.color':         'Cəlor',
+        'ui.home':          '← Chesə',
+        'home.motto1':      'FALLə TU',
+        'home.motto2':      'FALLə MELə',
+        'home.motto3':      'FALLə MO',
+        'door.past':        'CIAK<br>AMM FATT',
+        'door.now':         'FTS10<br>jè mo',
+        'door.contacts':    'Con<br>datt',
+        'footer.motto':     'Nsciun palc · Nsciuna transenn · Nsciuna regələ',
+        'past.title':       'Ciak amm fatt',
+        'now.title':        'FTS10 jè mo',
+        'now.search':       'CERCH U NOME O L\'ID',
+        'now.icon':         'Icon',
+        'now.participant':  'Partecəpandə',
+        'now.role':         'Ciak fè',
+        'now.code':         'Codəcə ID',
+        'now.empty':        'NISCIUN.',
+        'contacts.title':   'CUNDATT',
+        'contacts.instagram': 'Fotə · vidjə · annungə',
+        'contacts.bandcamp':  'Registrazionə live',
+        'contacts.email':     'Booking · info',
+      },
+      it: {
+        'ui.language':      'Lingua',
+        'ui.color':         'Colore',
+        'ui.home':          '← Home',
+        'home.motto1':      'FALLO DA TE',
+        'home.motto2':      'FALLO BRUTTO',
+        'home.motto3':      'FALLO ORA',
+        'door.past':        'Eventi<br>passati',
+        'door.now':         'FTS10<br>è ora',
+        'door.contacts':    'Con<br>tatti',
+        'footer.motto':     'Niente palco · Niente transenne · Niente regole',
+        'past.title':       'Eventi passati',
+        'now.title':        'FTS10 è ora',
+        'now.search':       'CERCA NOME O ID',
+        'now.icon':         'Icona',
+        'now.participant':  'Partecipante',
+        'now.role':         'Ruolo',
+        'now.code':         'Codice ID',
+        'now.empty':        'NESSUNO. SOLO SILENZIO.',
+        'contacts.title':   'Contatti',
+        'contacts.instagram': 'Foto · video · annunci',
+        'contacts.bandcamp':  'Registrazioni live',
+        'contacts.email':     'Booking · info',
+      },
+      en: {
+        'ui.language':      'Language',
+        'ui.color':         'Color',
+        'ui.home':          '← Home',
+        'home.motto1':      'DO IT YOURSELF',
+        'home.motto2':      'DO IT UGLY',
+        'home.motto3':      'DO IT NOW',
+        'door.past':        'Past<br>events',
+        'door.now':         'FTS10<br>is now',
+        'door.contacts':    'Con<br>tacts',
+        'footer.motto':     'No stage · No barrier · No rules',
+        'past.title':       'Past events',
+        'now.title':        'FTS10 is now',
+        'now.search':       'SEARCH NAME OR ID',
+        'now.icon':         'Icon',
+        'now.participant':  'Participant',
+        'now.role':         'Role',
+        'now.code':         'ID Code',
+        'now.empty':        'NOBODY. ONLY SILENCE.',
+        'contacts.title':   'Contacts',
+        'contacts.instagram': 'Photos · videos · news',
+        'contacts.bandcamp':  'Live recordings',
+        'contacts.email':     'Booking · info',
+      },
+      tr: {
+        'ui.language':      'Dil',
+        'ui.color':         'Renk',
+        'ui.home':          '← Ana Sayfa',
+        'home.motto1':      'KENDİN YAP',
+        'home.motto2':      'ÇİRKİN YAP',
+        'home.motto3':      'ŞİMDİ YAP',
+        'door.past':        'Geçmiş<br>etkinlikler',
+        'door.now':         'FTS10<br>şimdi',
+        'door.contacts':    'İleti<br>şim',
+        'footer.motto':     'Sahne yok · Bariyer yok · Kural yok',
+        'past.title':       'Geçmiş etkinlikler',
+        'now.title':        'FTS10 şimdi',
+        'now.search':       'İSİM VEYA ID ARA',
+        'now.icon':         'Simge',
+        'now.participant':  'Katılımcı',
+        'now.role':         'Rol',
+        'now.code':         'ID Kodu',
+        'now.empty':        'KİMSE YOK. SADECE SESSİZLİK.',
+        'contacts.title':   'İletişim',
+        'contacts.instagram': 'Fotoğraf · video · duyurular',
+        'contacts.bandcamp':  'Canlı kayıtlar',
+        'contacts.email':     'Rezervasyon · bilgi',
+      },
+      ar: {
+        'ui.language':      'اللغة',
+        'ui.color':         'اللون',
+        'ui.home':          '→ الرئيسية',
+        'home.motto1':      'افعلها بنفسك',
+        'home.motto2':      'افعلها قبيحة',
+        'home.motto3':      'افعلها الآن',
+        'door.past':        'أحداث<br>سابقة',
+        'door.now':         'FTS10<br>الآن',
+        'door.contacts':    'تواصل<br>معنا',
+        'footer.motto':     'لا منصة · لا حواجز · لا قواعد',
+        'past.title':       'أحداث سابقة',
+        'now.title':        'FTS10 الآن',
+        'now.search':       'ابحث بالاسم أو الرمز',
+        'now.icon':         'أيقونة',
+        'now.participant':  'المشارك',
+        'now.role':         'الدور',
+        'now.code':         'رمز التعريف',
+        'now.empty':        'لا أحد. صمت فقط.',
+        'contacts.title':   'تواصل معنا',
+        'contacts.instagram': 'صور · فيديو · إعلانات',
+        'contacts.bandcamp':  'تسجيلات حيّة',
+        'contacts.email':     'حجوزات · معلومات',
+      },
+    };
+
+    // Lingue che si scrivono da destra a sinistra
+    const RTL_LANGS = ['ar'];
+
+    /* =========================================================
+       DATI — modifica qui
+       ========================================================= */
+
+    // Locandine: foto casuali da picsum.photos come segnaposto, rese in B/N dal CSS.
+    // Per usare le locandine vere sostituisci "img" con il loro URL / percorso.
+    const picsum = seed => `https://picsum.photos/seed/${seed}/600/600`;
+
+    const EVENTS = [
+      { num: 'FTS 01', title: 'FREE SESSION',   date: '03.05.2025', place: 'Campagna Sataf',         img: picsum('fts-01') },
+      { num: 'FTS 02', title: 'FREE SESSION',                   date: '11.05.2025', place: 'Campagna Sataf',         img: picsum('fts-02') },
+      { num: 'FTS 03', title: 'FREE SESSION',                   date: 'XX.XX.XXXX', place: 'Campagna Sataf',         img: picsum('fts-03') },
+      { num: 'FTS 04', title: 'LAB',                            date: '18.11.2025', place: 'Storie Birra e Cultura', img: 'imgs/FTS4.jpg' },
+      { num: 'FTS 05', title: 'LAB',                            date: '02.12.2025', place: 'Storie Birra e Cultura', img: 'imgs/FTS5.jpeg' },
+      { num: 'FTS 06', title: 'LAB',                            date: '16.12.2025', place: 'Storie Birra e Cultura', img: 'imgs/FTS6.jpg' },
+      { num: 'FTS 07', title: 'JAM SESSION',                    date: '29.01.2026', place: 'Storie Birra e Cultura', img: 'imgs/FTS7.jpg' },
+      { num: 'FTS 08', title: 'JAM SESSION',                    date: '04.04.2026', place: 'Storie Birra e Cultura', img: 'imgs/FTS8.jpeg' },
+      { num: 'FTS 09', title: 'JAM SESSION',                    date: '10.04.2026', place: 'Liberhub',               img: 'imgs/FTS9.jpeg' },
+      { num: 'FTS XS', title: 'FREE SESSION',                   date: 'XX.XX.XXXX', place: 'Intrappola',             img: 'imgs/notFound.jpeg' },
+    ];
+
+    // Partecipanti FTS10. Icona generata da DiceBear a partire dal nome.
+    const avatar = seed => `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(seed)}`;
+
+    const PARTICIPANTS = [
+      { name: 'Sataf',         role: 'host',    code: 'FTS10-001' },
+      { name: 'Funky',         role: 'curious', code: 'FTS10-002' },
+      { name: 'Gionno',        role: 'host',    code: 'FTS10-003' },
+      { name: 'Gimo',          role: 'host',    code: 'FTS10-004' },
+      { name: 'Pinoski',       role: 'host',    code: 'FTS10-005' },
+      { name: 'JK',            role: 'mc',      code: 'FTS10-006' },
+      { name: 'QG',            role: 'mc',      code: 'FTS10-007' },
+      { name: 'Sardresh',      role: 'mc',      code: 'FTS10-008' },
+      { name: 'Teot',          role: 'mc',      code: 'FTS10-009' },
+      { name: 'Felipe',        role: 'mc',      code: 'FTS10-010' },
+    ].map(p => ({ ...p, icon: avatar(p.name) }));
+
+
+    /* =========================================================
+       PREFERENZE (lingua + palette), salvate nel browser
+       ========================================================= */
+    const $ = id => document.getElementById(id);
+
+    const prefs = {
+      lang:  load('fts-lang', 'it'),
+      theme: load('fts-theme', 'yellow'),
+    };
+
+    // dopo aver scelto la lingua chiude; sui colori resta aperto per provarli
+    document.querySelectorAll('.lang-btn').forEach(b =>
+      b.addEventListener('click', () => setMenu(false))
+    );
+
+    // localStorage può non funzionare (es. navigazione privata): in quel caso si ignora
+    function load(key, fallback) {
+      try { return localStorage.getItem(key) || fallback; } catch (e) { return fallback; }
+    }
+    function save(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) { /* niente */ }
+    }
+
+    function t(key) {
+      return TEXTS[prefs.lang][key] ?? TEXTS.it[key] ?? key;
+    }
+
+    function setLanguage(lang) {
+      if (!TEXTS[lang]) lang = 'it';
+      prefs.lang = lang;
+      save('fts-lang', lang);
+
+      // lingua e direzione di scrittura della pagina
+      document.documentElement.lang = lang;
+      document.documentElement.dir  = RTL_LANGS.includes(lang) ? 'rtl' : 'ltr';
+
+      document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+      document.querySelectorAll('[data-i18n-html]').forEach(el => el.innerHTML = t(el.dataset.i18nHtml));
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = t(el.dataset.i18nPlaceholder));
+
+      document.querySelectorAll('.lang-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.lang === lang)
+      );
+
+      renderParticipants($('search').value);   // aggiorna il messaggio "nessun risultato"
+    }
+
+    function setTheme(theme) {
+      prefs.theme = theme;
+      save('fts-theme', theme);
+      document.documentElement.dataset.theme = theme;
+
+      document.querySelectorAll('.swatch').forEach(b =>
+        b.classList.toggle('active', b.dataset.themeBtn === theme)
+      );
+    }
+
+    document.querySelectorAll('.lang-btn').forEach(b =>
+      b.addEventListener('click', () => setLanguage(b.dataset.lang))
+    );
+    document.querySelectorAll('.swatch').forEach(b =>
+      b.addEventListener('click', () => setTheme(b.dataset.themeBtn))
+    );
+
+
+    /* =========================================================
+       NAVIGAZIONE con #hash (funziona anche in locale)
+       ========================================================= */
+    const SCREENS = ['home', 'past', 'now', 'contatti'];
+
+    function goTo(screen) {
+      location.hash = screen;
+    }
+
+    function route() {
+      const hash = location.hash.replace('#', '');
+      const screen = SCREENS.includes(hash) ? hash : 'home';
+
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      $(screen).classList.add('active');
+      closeLightbox();
+      window.scrollTo(0, 0);
+    }
+
+
+    /* =========================================================
+       1. LOCANDINE
+       ========================================================= */
+    // Trasforma "Spazio Occupato" in lettere separate per la striscia spaziata
+    function spacedLetters(text) {
+      return [...text.toUpperCase()].map(c => `<span>${c === ' ' ? '·' : c}</span>`).join('');
+    }
+
+    // dir="ltr" sulla locandina: date e nomi sono in caratteri latini e restano da sinistra a destra
+    function posterHTML(ev) {
+      return `
+        <div class="p-num" dir="ltr">${ev.num}</div>
+        <div class="spaced" dir="ltr">${spacedLetters(ev.date + ' ' + ev.place)}</div>
+        <div class="p-photo"><img src="${ev.img}" alt="Locandina ${ev.num}" loading="lazy"></div>
+        <div class="p-title" dir="ltr">${ev.title}</div>`;
+    }
+
+    function renderPosters() {
+      const grid = $('posters');
+      grid.innerHTML = '';
+
+      EVENTS.forEach(ev => {
+        const btn = document.createElement('button');
+        btn.className = 'poster';
+        btn.innerHTML = posterHTML(ev);
+        btn.onclick = () => openLightbox(ev);
+        grid.appendChild(btn);
+      });
+    }
+
+    // Selettore 2 / 3 / 4 colonne (su schermi stretti il CSS forza 2 o 1)
+    document.querySelectorAll('#cols-control button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#cols-control button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        $('posters').style.setProperty('--cols', btn.dataset.cols);
+      });
+    });
+
+    function openLightbox(ev) {
+      $('lightbox-content').innerHTML = `
+        <img class="lightbox-img" src="${ev.img}" alt="Locandina ${ev.num}">
+        <div class="lightbox-caption label">${ev.num} · ${ev.date} · ${ev.place}</div>`;
+
+      // clic sull'immagine: passa da "adatta allo schermo" a "dimensione reale" e viceversa
+      const img = $('lightbox-content').querySelector('.lightbox-img');
+      img.addEventListener('click', () => {
+        $('lightbox').classList.toggle('actual-size');
+      });
+
+      $('lightbox').classList.remove('actual-size');
+      $('lightbox').classList.add('open');
+    }
+
+    function closeLightbox() {
+      $('lightbox').classList.remove('open');
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeLightbox(); setMenu(false); }
+    });
+
+
+    /* =========================================================
+       2. TABELLA PARTECIPANTI
+       ========================================================= */
+    function renderParticipants(filter = '') {
+      const f = filter.trim().toLowerCase();
+      const rows = PARTICIPANTS.filter(p =>
+        p.name.toLowerCase().includes(f) || p.code.toLowerCase().includes(f)
+      );
+
+      $('participants').innerHTML = rows.length
+        ? rows.map(p => `
+            <tr>
+              <td class="icon"><img src="${p.icon}" alt="" loading="lazy"></td>
+              <td class="name">${p.name}</td>
+              <td class="role">${p.role}</td>
+              <td class="code"><bdi>${p.code}</bdi></td>
+            </tr>`).join('')
+        : `<tr class="empty-row"><td colspan="3">${t('now.empty')}</td></tr>`;
+    }
+
+    $('search').addEventListener('input', e => renderParticipants(e.target.value));
+
+
+    /* =========================================================
+  MENU A TENDINA (solo telefono)
+      ========================================================= */
+    const topbar  = document.querySelector('.topbar');
+    const menuBtn = document.querySelector('.menu-btn');
+
+    function setMenu(open) {
+      topbar.classList.toggle('open', open);
+      menuBtn.setAttribute('aria-expanded', open);
+      menuBtn.textContent = open ? '✕' : '☰';
+    }
+
+    menuBtn.addEventListener('click', () => setMenu(!topbar.classList.contains('open')));
+
+    // chiude toccando fuori dalla barra
+    document.addEventListener('click', e => {
+      if (!topbar.contains(e.target)) setMenu(false);
+    });
+
+    /* =========================================================
+       AVVIO
+       ========================================================= */
+    renderPosters();
+    setTheme(prefs.theme);
+    setLanguage(prefs.lang);     // chiama anche renderParticipants()
+    window.addEventListener('hashchange', route);
+    route();
+  </script>
+</body>
+</html>
