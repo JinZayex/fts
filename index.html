@@ -5,6 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FREE THE SOUND</title>
 
+  <!-- Anteprima per social e chat (WhatsApp, Instagram, Telegram, Facebook...)
+       SITE_URL: indirizzo pubblico del sito. Se il repo NON si chiama jinzayex.github.io
+       aggiungi /nome-repo (es. https://jinzayex.github.io/fts/) — anche in og:image.
+       Se colleghi un dominio tuo, sostituisci l'indirizzo con quello. -->
+  <meta name="description" content="Free The Sound: jam, lab e free session DIY. Do it yourself · Do it ugly · Do it now.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Free The Sound">
+  <meta property="og:title" content="FREE THE SOUND">
+  <meta property="og:description" content="Jam, lab e free session DIY. No stage · No barrier · No rules.">
+  <meta property="og:url" content="https://jinzayex.github.io/">
+  <meta property="og:image" content="https://jinzayex.github.io/imgs/og-fts.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Free The Sound — Do it yourself, do it ugly, do it now">
+  <meta property="og:locale" content="it_IT">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#0b0b0b">
+
+  <!-- Icona della scheda: quadrato giallo con F nera, disegnato qui (nessun file esterno) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='3' y='3' width='58' height='58' fill='%23ffe100' stroke='%230b0b0b' stroke-width='6'/%3E%3Cpath d='M20 14h26v9H30v7h13v9H30v11H20z' fill='%230b0b0b'/%3E%3C/svg%3E">
+
   <!-- Font (Google Fonts)
        Anton            → titoli: grotesk condensato e pesantissimo, stile copertina hardcore
        Archivo Narrow   → testo
@@ -58,12 +79,12 @@
       font-size: 17px;
       transition: background 0.25s;
 
-      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><circle cx='16' cy='16' r='14' fill='white' fill-opacity='0.3' stroke='white' stroke-width='2'/></svg>") 16 16, auto;
+      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><circle cx='16' cy='16' r='13' fill='white' fill-opacity='0.3' stroke='%230b0b0b' stroke-width='3'/><circle cx='16' cy='16' r='11' fill='none' stroke='white' stroke-width='1.5'/></svg>") 16 16, auto;
 
     }
 
-    a, button, .poster, .door, .swatch {
-      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><circle cx='16' cy='16' r='14' fill='white' fill-opacity='0.65' stroke='white' stroke-width='2'/></svg>") 16 16, pointer;
+    a, button, select, .poster, .door, .swatch {
+      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><circle cx='16' cy='16' r='13' fill='white' fill-opacity='0.65' stroke='%230b0b0b' stroke-width='3'/><circle cx='16' cy='16' r='11' fill='none' stroke='white' stroke-width='1.5'/></svg>") 16 16, pointer;
     }
 
 
@@ -88,7 +109,6 @@
       max-width: 1320px;
       margin: 0 auto;
       padding: var(--pad);
-      padding-top: var(--pad);   /* spazio per la barra fissa */
     }
 
     /* =========================================================
@@ -305,6 +325,28 @@
       padding: 4px 10px;
     }
 
+    /* Scritta "ISCRIVITI FTS10" sotto la foto: lampeggia scambiando nero e colore principale */
+    .signup-cta {
+      display: block;
+      margin-top: 10px;
+      padding: 6px 12px 10px;
+      border: var(--border);
+      font-size: clamp(28px, 7vw, 100px);
+      text-align: center;
+      text-decoration: none;
+      animation: cta-flip 1s steps(1) infinite;
+    }
+    @keyframes cta-flip {
+      0%, 49.9%  { background: var(--black); color: var(--main); }
+      50%, 100%  { background: var(--main);  color: var(--black); }
+    }
+    .signup-cta:hover { animation-play-state: paused; }
+    /* chi ha chiesto meno animazioni al sistema la vede ferma */
+    @media (prefers-reduced-motion: reduce) {
+      .signup-cta { animation: none; background: var(--black); color: var(--main); }
+    }
+    html[lang="ar"] .signup-cta { line-height: 1.15; }
+
     .hero .bottom {
       font-size: clamp(48px, 10.5vw, 150px);
       text-align: center;
@@ -366,7 +408,15 @@
       --cols: 3;
       display: grid;
       grid-template-columns: repeat(var(--cols), 1fr);
+      align-items: start;
       gap: clamp(16px, 2.5vw, 32px);
+    }
+    /* Ogni colonna impila le sue locandine: altezze diverse, nessun buco */
+    .poster-col {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(16px, 2.5vw, 32px);
+      min-width: 0;
     }
     @media (max-width: 900px) { .posters { --cols: 2 !important; } }
     @media (max-width: 540px) { .posters { --cols: 1 !important; } }
@@ -375,7 +425,7 @@
     .poster {
       display: flex;
       flex-direction: column;
-      aspect-ratio: 210 / 297;      /* proporzione A4 */
+      width: 100%;                  /* tutte larghe uguali; l'altezza la decide la foto */
       background: var(--main);
       border: var(--border);
       padding: 6% 6% 5%;
@@ -394,25 +444,19 @@
     .poster .spaced { margin: 6px 0; font-size: clamp(9px, 1vw, 13px); padding: 2px 8px; }
 
     .poster .p-photo {
-      flex: 1;
       background: var(--black);
       border: 4px solid var(--black);
       overflow: hidden;
-      min-height: 0;
     }
     .poster .p-photo img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;                 /* proporzioni originali: niente ritagli, niente bande */
       display: block;
       filter: grayscale(1) contrast(2) brightness(1.05);
     }
 
-    .poster:hover .p-photo:hover img:hover {
-      background: var(--black);
-      object-fit: contain;
-      filter: none;
-    }
+    /* al passaggio sulla foto: colori originali */
+    .poster .p-photo img:hover { filter: none; }
 
     .poster .p-title {
       font-family: var(--font-title);
@@ -435,8 +479,6 @@
       padding: 24px;
     }
     #lightbox.open { display: flex; }
-    #lightbox .poster { width: min(520px, 90vw, 66vh); cursor: default; }
-    #lightbox .poster:hover { transform: none; box-shadow: none; }
     #lightbox .close {
       position: absolute;
       top: 16px;
@@ -553,6 +595,106 @@
     }
     .empty-row td { text-align: center; padding: 32px; font-family: var(--font-mono); }
 
+
+    /* =========================================================
+       2b. FORM ISCRIZIONE (sotto la tabella)
+       ========================================================= */
+    .signup {
+      scroll-margin-top: calc(var(--topbar) + 16px);   /* non finisce sotto la barra */
+      margin-top: 48px;
+      border: var(--border);
+      background: var(--main);
+    }
+    .signup-head {
+      background: var(--black);
+      color: var(--main);
+      padding: clamp(16px, 2.5vw, 28px);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .signup-head .mega { font-size: clamp(44px, 8vw, 110px); }
+    .signup-head .label { max-width: 34ch; }
+
+    .signup-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--black);
+      border-top: var(--border);
+    }
+    @media (max-width: 700px) { .signup-form { grid-template-columns: 1fr; } }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: clamp(14px, 2vw, 22px);
+      background: var(--main);
+    }
+    .field.wide { grid-column: 1 / -1; }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--white);
+      border: 3px solid var(--black);
+      border-radius: 0;
+      font-family: var(--font-mono);
+      font-size: 16px;               /* 16px: su iPhone evita lo zoom automatico */
+      color: var(--black);
+    }
+    .field textarea { resize: vertical; min-height: 120px; }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus { outline: none; background: var(--black); color: var(--main); }
+    .field ::placeholder { color: var(--grey); }
+
+    /* Menu a tendina con freccia disegnata, uguale in tutti i browser */
+    .field select {
+      appearance: none;
+      -webkit-appearance: none;
+      text-transform: uppercase;
+      background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                        linear-gradient(135deg, currentColor 50%, transparent 50%);
+      background-position: calc(100% - 22px) 50%, calc(100% - 15px) 50%;
+      background-size: 7px 7px;
+      background-repeat: no-repeat;
+      padding-inline-end: 40px;
+    }
+    html[dir="rtl"] .field select { background-position: 15px 50%, 22px 50%; }
+
+    .signup-foot {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: clamp(14px, 2vw, 22px);
+      background: var(--main);
+    }
+    .signup-foot .btn:disabled { opacity: 0.5; transform: none; box-shadow: none; }
+
+    .form-status {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      border: 3px solid var(--black);
+    }
+    .form-status:empty { display: none; }
+    .form-status.ok    { background: var(--black); color: var(--main); }
+    .form-status.error { background: var(--white); }
+
+    /* Campo trappola per i bot: invisibile alle persone */
+    .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
     /* =========================================================
        3. CONTATTI
        ========================================================= */
@@ -588,12 +730,14 @@
     html[lang="ar"] .label,
     html[lang="ar"] .spaced,
     html[lang="ar"] .btn,
-    html[lang="ar"] thead th { letter-spacing: 0; }
+    html[lang="ar"] thead th,
+    html[lang="ar"] .form-status { letter-spacing: 0; }
 
     /* L'arabo ha segni sopra e sotto le lettere: serve più interlinea */
     html[lang="ar"] .door .mega,
     html[lang="ar"] .section-head .mega,
-    html[lang="ar"] .link .mega { line-height: 1.15; }
+    html[lang="ar"] .link .mega,
+    html[lang="ar"] .signup-head .mega { line-height: 1.15; }
 
     /* Le frecce puntano nel verso di lettura */
     html[dir="rtl"] .door .arrow,
@@ -612,7 +756,7 @@
 
     <button class="menu-btn" aria-expanded="false" aria-controls="controls" aria-label="Menu">☰</button>
 
-    <div class="controls">
+    <div class="controls" id="controls">
       <div class="group">
         <span class="label" data-i18n="ui.language">Lingua</span>
         <button class="lang-btn" data-lang="alt">ALT</button>
@@ -662,6 +806,8 @@
           <span class="tag label">Enjoy low resolution</span>
           -->
         </div>
+
+        <a class="mega bottom signup-cta" href="#now" data-scroll="signup" data-i18n="home.signup">Iscriviti a FTS10</a>
 
         <!--
         <div class="mega bottom">For the children</div>
@@ -729,6 +875,54 @@
           <tbody id="participants"></tbody>
         </table>
       </div>
+
+      <!-- ===================== FORM ISCRIZIONE =====================
+           Sostituisci IL_TUO_ID con l'ID del tuo form Formspree
+           (formspree.io → New form → copia l'URL che finisce con /f/xxxxxxx) -->
+      <div class="signup" id="signup">
+        <div class="signup-head">
+          <h2 class="mega" data-i18n="form.title">Iscriviti</h2>
+          <span class="label" data-i18n="form.intro">Vuoi entrare in FTS10? Lasciaci due righe, ti ricontattiamo.</span>
+        </div>
+
+        <form class="signup-form" id="signup-form" action="https://formspree.io/f/IL_TUO_ID" method="POST">
+          <div class="field">
+            <label class="label" for="f-name" data-i18n="form.name">Nome / A.K.A.</label>
+            <input id="f-name" name="nome" type="text" required maxlength="60" autocomplete="nickname">
+          </div>
+
+          <div class="field">
+            <label class="label" for="f-role" data-i18n="form.role">Ruolo</label>
+            <select id="f-role" name="ruolo" required>
+              <option value="mc">mc</option>
+              <option value="mc">producer</option>
+              <option value="mc">engineer</option>
+              <option value="mc">musician/jammer</option>
+              <option value="curious">curious</option>
+            </select>
+          </div>
+
+          <div class="field wide">
+            <label class="label" for="f-contact" data-i18n="form.contact">Email o Instagram</label>
+            <input id="f-contact" name="contatto" type="text" required maxlength="120" data-i18n-placeholder="form.contactPh" placeholder="nome@mail.com / @nome">
+          </div>
+
+          <div class="field wide">
+            <label class="label" for="f-msg" data-i18n="form.message">Messaggio</label>
+            <textarea id="f-msg" name="messaggio" maxlength="1000" data-i18n-placeholder="form.messagePh" placeholder="Cosa porti? Cosa ti aspetti? Chi sei?"></textarea>
+          </div>
+
+          <!-- trappola anti-spam: i bot la compilano, le persone non la vedono -->
+          <div class="hp" aria-hidden="true">
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off">
+          </div>
+
+          <div class="signup-foot">
+            <button class="btn" type="submit" id="f-send" data-i18n="form.send">Invia →</button>
+            <span class="form-status" id="form-status" role="status" aria-live="polite"></span>
+          </div>
+        </form>
+      </div>
     </section>
 
     <!-- ===================== 3. CONTATTI ===================== -->
@@ -768,7 +962,7 @@
 
   <script>
     /* =========================================================
-       TESTI IN QUATTRO LINGUE — modifica qui
+       TESTI IN CINQUE LINGUE — modifica qui
        Ogni elemento con data-i18n="chiave" prende il testo da qui.
        data-i18n-html → permette <br>; data-i18n-placeholder → placeholder degli input.
        Per aggiungere una lingua: un blocco qui + un bottone .lang-btn nella topbar
@@ -782,6 +976,7 @@
         'home.motto1':      'FALLə TU',
         'home.motto2':      'FALLə MELə',
         'home.motto3':      'FALLə MO',
+        'home.signup':      'Partecpisc a FTS10',           
         'door.past':        'CIAK<br>AMM FATT',
         'door.now':         'FTS10<br>jè mo',
         'door.contacts':    'Con<br>datt',
@@ -798,6 +993,19 @@
         'contacts.instagram': 'Fotə · vidjə · annungə',
         'contacts.bandcamp':  'Registrazionə live',
         'contacts.email':     'Booking · info',
+        'form.title':       'Partecpisc',                 
+        'form.intro':       'Uè trasì jind a FTS10? Scriv do caus e t condattem nu.', 
+        'form.name':        'Nem / A.K.A.',             
+        'form.role':        'Ciak fè',                     
+        'form.roleOther':   'alt caus',                     
+        'form.contact':     'Email o Instagram',         
+        'form.contactPh':   'nome@mail.com / @nome',     
+        'form.message':     'Messagg',                 
+        'form.messagePh':   'Ciak puert? Ciak t\'aspitt? A c appartinn?', 
+        'form.send':        'Mann →',                   
+        'form.sending':     'Mann...',                  
+        'form.ok':          'Mannet. N sndim.',    
+        'form.error':       'Ste qualche problem. Prev arret o scriv na mail.', 
       },
       it: {
         'ui.language':      'Lingua',
@@ -806,6 +1014,7 @@
         'home.motto1':      'FALLO DA TE',
         'home.motto2':      'FALLO BRUTTO',
         'home.motto3':      'FALLO ORA',
+        'home.signup':      'Iscriviti a FTS10',
         'door.past':        'Eventi<br>passati',
         'door.now':         'FTS10<br>è ora',
         'door.contacts':    'Con<br>tatti',
@@ -822,6 +1031,19 @@
         'contacts.instagram': 'Foto · video · annunci',
         'contacts.bandcamp':  'Registrazioni live',
         'contacts.email':     'Booking · info',
+        'form.title':       'Iscriviti',
+        'form.intro':       'Vuoi entrare in FTS10? Lasciaci due righe, ti ricontattiamo.',
+        'form.name':        'Nome / A.K.A.',
+        'form.role':        'Ruolo',
+        'form.roleOther':   'altro',
+        'form.contact':     'Email o Instagram',
+        'form.contactPh':   'nome@mail.com / @nome',
+        'form.message':     'Messaggio',
+        'form.messagePh':   'Cosa porti? Cosa ti aspetti? Chi sei?',
+        'form.send':        'Invia →',
+        'form.sending':     'Invio...',
+        'form.ok':          'Ricevuto. Ci sentiamo.',
+        'form.error':       'Errore. Riprova o scrivici via email.',
       },
       en: {
         'ui.language':      'Language',
@@ -830,6 +1052,7 @@
         'home.motto1':      'DO IT YOURSELF',
         'home.motto2':      'DO IT UGLY',
         'home.motto3':      'DO IT NOW',
+        'home.signup':      'Join FTS10',
         'door.past':        'Past<br>events',
         'door.now':         'FTS10<br>is now',
         'door.contacts':    'Con<br>tacts',
@@ -846,6 +1069,19 @@
         'contacts.instagram': 'Photos · videos · news',
         'contacts.bandcamp':  'Live recordings',
         'contacts.email':     'Booking · info',
+        'form.title':       'Sign up',
+        'form.intro':       'Want in on FTS10? Drop us a line, we\'ll get back to you.',
+        'form.name':        'Name / A.K.A.',
+        'form.role':        'Role',
+        'form.roleOther':   'other',
+        'form.contact':     'Email or Instagram',
+        'form.contactPh':   'name@mail.com / @name',
+        'form.message':     'Message',
+        'form.messagePh':   'What are you bringing? What do you expect? Who are you?',
+        'form.send':        'Send →',
+        'form.sending':     'Sending...',
+        'form.ok':          'Got it. Talk soon.',
+        'form.error':       'Error. Try again or email us.',
       },
       tr: {
         'ui.language':      'Dil',
@@ -854,6 +1090,7 @@
         'home.motto1':      'KENDİN YAP',
         'home.motto2':      'ÇİRKİN YAP',
         'home.motto3':      'ŞİMDİ YAP',
+        'home.signup':      'FTS10\'a katıl',
         'door.past':        'Geçmiş<br>etkinlikler',
         'door.now':         'FTS10<br>şimdi',
         'door.contacts':    'İleti<br>şim',
@@ -870,6 +1107,19 @@
         'contacts.instagram': 'Fotoğraf · video · duyurular',
         'contacts.bandcamp':  'Canlı kayıtlar',
         'contacts.email':     'Rezervasyon · bilgi',
+        'form.title':       'Kayıt ol',
+        'form.intro':       'FTS10\'a katılmak mı istiyorsun? Bize yaz, dönüş yapalım.',
+        'form.name':        'İsim / A.K.A.',
+        'form.role':        'Rol',
+        'form.roleOther':   'diğer',
+        'form.contact':     'E-posta veya Instagram',
+        'form.contactPh':   'isim@mail.com / @isim',
+        'form.message':     'Mesaj',
+        'form.messagePh':   'Ne getiriyorsun? Ne bekliyorsun? Sen kimsin?',
+        'form.send':        'Gönder →',
+        'form.sending':     'Gönderiliyor...',
+        'form.ok':          'Aldık. Görüşürüz.',
+        'form.error':       'Hata. Tekrar dene ya da e-posta at.',
       },
       ar: {
         'ui.language':      'اللغة',
@@ -878,6 +1128,7 @@
         'home.motto1':      'افعلها بنفسك',
         'home.motto2':      'افعلها قبيحة',
         'home.motto3':      'افعلها الآن',
+        'home.signup':      'سجّل في FTS10',
         'door.past':        'أحداث<br>سابقة',
         'door.now':         'FTS10<br>الآن',
         'door.contacts':    'تواصل<br>معنا',
@@ -894,11 +1145,28 @@
         'contacts.instagram': 'صور · فيديو · إعلانات',
         'contacts.bandcamp':  'تسجيلات حيّة',
         'contacts.email':     'حجوزات · معلومات',
+        'form.title':       'سجّل',
+        'form.intro':       'تريد المشاركة في FTS10؟ اكتب لنا وسنعاود التواصل معك.',
+        'form.name':        'الاسم / اللقب',
+        'form.role':        'الدور',
+        'form.roleOther':   'آخر',
+        'form.contact':     'البريد الإلكتروني أو إنستغرام',
+        'form.contactPh':   'name@mail.com / @name',
+        'form.message':     'رسالة',
+        'form.messagePh':   'ماذا ستقدّم؟ ماذا تتوقّع؟ من أنت؟',        
+        'form.send':        'أرسل ←',
+        'form.sending':     'جارٍ الإرسال...',
+        'form.ok':          'وصلت. نتواصل قريبًا.',
+        'form.error':       'خطأ. حاول مجددًا أو راسلنا بالبريد.',
       },
     };
 
     // Lingue che si scrivono da destra a sinistra
     const RTL_LANGS = ['ar'];
+
+    // Codice lingua "vero" da mettere su <html lang>: "alt" non è un codice valido,
+    // "it-x-alt" significa "italiano, variante privata alt"
+    const HTML_LANG = { alt: 'it-x-alt' };
 
     /* =========================================================
        DATI — modifica qui
@@ -910,8 +1178,8 @@
 
     const EVENTS = [
       { num: 'FTS 01', title: 'FREE SESSION',   date: '03.05.2025', place: 'Campagna Sataf',         img: picsum('fts-01') },
-      { num: 'FTS 02', title: 'FREE SESSION',                   date: '11.05.2025', place: 'Campagna Sataf',         img: 'imgs/notFound.jpeg' },
-      { num: 'FTS 03', title: 'FREE SESSION',                   date: 'XX.XX.XXXX', place: 'Campagna Sataf',         img: 'imgs/notFound.jpeg' },
+      { num: 'FTS 02', title: 'FREE SESSION',                   date: '11.05.2025', place: 'Campagna Sataf',         img: picsum('fts-02') },
+      { num: 'FTS 03', title: 'FREE SESSION',                   date: 'XX.XX.XXXX', place: 'Campagna Sataf',         img: picsum('fts-03') },
       { num: 'FTS 04', title: 'LAB',                            date: '18.11.2025', place: 'Storie Birra e Cultura', img: 'imgs/FTS4.jpg' },
       { num: 'FTS 05', title: 'LAB',                            date: '02.12.2025', place: 'Storie Birra e Cultura', img: 'imgs/FTS5.jpeg' },
       { num: 'FTS 06', title: 'LAB',                            date: '16.12.2025', place: 'Storie Birra e Cultura', img: 'imgs/FTS6.jpg' },
@@ -926,7 +1194,7 @@
 
     const PARTICIPANTS = [
       { name: 'Sataf',         role: 'host',    code: 'FTS10-001' },
-      { name: 'Funky',         role: 'curious', code: 'FTS10-002' },
+      { name: 'Funky',         role: 'puzzone',    code: 'FTS10-002' },
     ].map(p => ({ ...p, icon: avatar(p.name) }));
 
 
@@ -963,7 +1231,7 @@
       save('fts-lang', lang);
 
       // lingua e direzione di scrittura della pagina
-      document.documentElement.lang = lang;
+      document.documentElement.lang = HTML_LANG[lang] || lang;
       document.documentElement.dir  = RTL_LANGS.includes(lang) ? 'rtl' : 'ltr';
 
       document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
@@ -975,6 +1243,8 @@
       );
 
       renderParticipants($('search').value);   // aggiorna il messaggio "nessun risultato"
+      const st = document.getElementById('form-status');
+      if (st && st.dataset.key) st.textContent = t(st.dataset.key);
     }
 
     function setTheme(theme) {
@@ -1004,6 +1274,18 @@
       location.hash = screen;
     }
 
+    // Link con data-scroll: cambiano schermata e poi scorrono fino a un elemento
+    let scrollTarget = null;
+    document.querySelectorAll('[data-scroll]').forEach(a =>
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        scrollTarget = a.dataset.scroll;
+        const screen = a.getAttribute('href').replace('#', '');
+        if (location.hash === '#' + screen) route();   // già lì: scorri e basta
+        else location.hash = screen;
+      })
+    );
+
     function route() {
       const hash = location.hash.replace('#', '');
       const screen = SCREENS.includes(hash) ? hash : 'home';
@@ -1011,7 +1293,12 @@
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       $(screen).classList.add('active');
       closeLightbox();
-      window.scrollTo(0, 0);
+      if (scrollTarget && $(scrollTarget)) {
+        $(scrollTarget).scrollIntoView({ behavior: 'smooth' });
+        scrollTarget = null;
+      } else {
+        window.scrollTo(0, 0);
+      }
     }
 
 
@@ -1032,16 +1319,33 @@
         <div class="p-title" dir="ltr">${ev.title}</div>`;
     }
 
+    // Colonne effettive: il CSS può forzarne meno su schermi stretti
+    function posterCols() {
+      return parseInt(getComputedStyle($('posters')).getPropertyValue('--cols')) || 3;
+    }
+
+    // Le locandine vanno nelle colonne a giro (1→col1, 2→col2, 3→col3, 4→col1...):
+    // l'ordine si legge da sinistra a destra e ogni foto tiene la sua altezza.
+    let renderedCols = 0;
     function renderPosters() {
       const grid = $('posters');
+      const cols = posterCols();
+      renderedCols = cols;
       grid.innerHTML = '';
 
-      EVENTS.forEach(ev => {
+      const columns = Array.from({ length: cols }, () => {
+        const col = document.createElement('div');
+        col.className = 'poster-col';
+        grid.appendChild(col);
+        return col;
+      });
+
+      EVENTS.forEach((ev, i) => {
         const btn = document.createElement('button');
         btn.className = 'poster';
         btn.innerHTML = posterHTML(ev);
         btn.onclick = () => openLightbox(ev);
-        grid.appendChild(btn);
+        columns[i % cols].appendChild(btn);
       });
     }
 
@@ -1051,7 +1355,13 @@
         document.querySelectorAll('#cols-control button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         $('posters').style.setProperty('--cols', btn.dataset.cols);
+        renderPosters();
       });
+    });
+
+    // Ruotando il telefono o ridimensionando la finestra cambia il numero di colonne
+    window.addEventListener('resize', () => {
+      if (posterCols() !== renderedCols) renderPosters();
     });
 
     function openLightbox(ev) {
@@ -1095,10 +1405,53 @@
               <td class="role">${p.role}</td>
               <td class="code"><bdi>${p.code}</bdi></td>
             </tr>`).join('')
-        : `<tr class="empty-row"><td colspan="3">${t('now.empty')}</td></tr>`;
+        : `<tr class="empty-row"><td colspan="4">${t('now.empty')}</td></tr>`;
     }
 
     $('search').addEventListener('input', e => renderParticipants(e.target.value));
+
+
+    /* =========================================================
+       2b. INVIO FORM (Formspree, senza cambiare pagina)
+       ========================================================= */
+    const form   = $('signup-form');
+    const status = $('form-status');
+    const send   = $('f-send');
+
+    function setStatus(key, kind) {
+      status.textContent = key ? t(key) : '';
+      status.className = 'form-status' + (kind ? ' ' + kind : '');
+      status.dataset.key = key || '';
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (form.action.includes('IL_TUO_ID')) {
+        console.warn('Form non configurato: sostituisci IL_TUO_ID con l\'ID Formspree.');
+        setStatus('form.error', 'error');
+        return;
+      }
+
+      send.disabled = true;
+      setStatus('form.sending');
+
+      try {
+        const data = new FormData(form);
+        data.append('lingua', prefs.lang);
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: data,
+          headers: { 'Accept': 'application/json' },
+        });
+        if (!res.ok) throw new Error(res.status);
+        form.reset();
+        setStatus('form.ok', 'ok');
+      } catch (err) {
+        setStatus('form.error', 'error');
+      } finally {
+        send.disabled = false;
+      }
+    });
 
 
     /* =========================================================
